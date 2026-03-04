@@ -34,4 +34,9 @@ Author responsibility
 
 5) Additional modifications by the author (examples)
 - Batch execution (task scheduling, progress reporting), file I/O and file-selection UI, robust failure handling (e.g., CHANGE_MAX_TRIES), result writing (txt/csv), and reproducibility-related logging.
-*/
+
+
+
+BUILD: g++ -O2 -std=c++17 src/main.cpp -o PLENA
+- 
+
