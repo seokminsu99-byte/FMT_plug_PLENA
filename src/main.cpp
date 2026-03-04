@@ -30,8 +30,6 @@ Author responsibility
 - Multithreading: the author proposed the idea/direction. (Unless explicitly stated otherwise, implementation/coding is considered integrated and reviewed under the author’s responsibility.)
 - In addition, limited assistance from a conversational AI tool was used for debugging suggestions, language polishing of text/comments, and code cleanup (readability-oriented refactoring).
 
-5) Additional modifications by the author (examples)
-- Batch execution (task scheduling, progress reporting), file I/O and file-selection UI, robust failure handling (e.g., CHANGE_MAX_TRIES), result writing (txt/csv), and reproducibility-related logging.
 */
 
 ///////////////////////////////헤더파일//////////////////////////////////////
