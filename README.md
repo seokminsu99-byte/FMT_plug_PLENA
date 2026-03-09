@@ -37,5 +37,9 @@ Author responsibility
 BUILD: g++ -O2 -std=c++17 src/main.cpp -o PLENA
 
 
-CITATION.cff
+
+# FMT_plug tool – PLENA (v0.9)
+
+## License
+MIT License (see LICENSE).
 
