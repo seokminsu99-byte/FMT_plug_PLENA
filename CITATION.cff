@@ -1,0 +1,14 @@
+cff-version: 1.2.0
+message: "If you use this software, please cite it."
+title: "FMT_plug tool – PLENA"
+version: "0.9"
+date-released: 2026-03-09
+url: "https://github.com/seokminsu99-byte/FMT_plug_PLENA"
+license: "MIT"
+authors:
+  - family-names: Park
+    given-names: Changmin
+  - family-names: Seok
+    given-names: Minsoo
+  - family-names: Seo
+    given-names: Yongwon
