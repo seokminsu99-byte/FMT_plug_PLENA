@@ -1,6 +1,7 @@
 cff-version: 1.2.0
 message: "If you use this software, please cite it."
-title: "FMT_plug tool – PLENA"
+type: software
+title: "FMT_plug_PLENA"
 version: "0.9"
 date-released: 2026-03-09
 url: "https://github.com/seokminsu99-byte/FMT_plug_PLENA"
