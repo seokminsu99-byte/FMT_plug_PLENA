@@ -254,7 +254,7 @@ static void computeTravelTime(const Matrix& D, Matrix& T, int n0, int m0) {
 }
 
 // q(t)
-static void computeDischarge(const Matrix& I, const Matrix& T, const Matrix& FA, vector<double>& q) {
+static void computeDischarge(const Matrix& I, const Matrix& T, const Matrix& FA, int n0, int m0, vector<double>& q) {
     int n = T.n, m = T.m;
     int maxT = 0;
     for (int i = 0; i < n; ++i)
@@ -275,7 +275,7 @@ static void computeDischarge(const Matrix& I, const Matrix& T, const Matrix& FA,
 
     q.reserve(static_cast<size_t>(maxT) + 2);
     q.push_back(0.0);
-    q.push_back(static_cast<double>(I(n - 1, m - 1)));
+    q.push_back(static_cast<double>(I(n0, m0)));
     for (int k = 1; k <= maxT - 1; ++k) q.push_back(qk[k]);
     q.push_back(0.0);
 }
@@ -294,7 +294,7 @@ static QResult calculateQ2(const Matrix& D, const Matrix& I, int n0, int m0) {
     Matrix T(D.n, D.m, 0);
     computeTravelTime(D, T, n0, m0);
     vector<double> q;
-    computeDischarge(I, T, FA, q);
+    computeDischarge(I, T, FA, n0, m0, q);
     return { FA, T, q };
 }
 
