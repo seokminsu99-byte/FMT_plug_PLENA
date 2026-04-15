@@ -1,6 +1,6 @@
 /*
 FMT_plug tool - PLENA_ENG ver
-ver. 0.9
+ver. 0.9.1
 
 PROVENANCE / ATTRIBUTION
 
@@ -81,9 +81,15 @@ struct Matrix
     int n = 0, m = 0;
     vector<int> data;
     Matrix() = default;
-    Matrix(int rows, int cols, int value = 0) : n(rows), m(cols), data(rows* cols, value) {}
-    inline int& operator()(int i, int j) { return data[i * m + j]; }
-    inline const int& operator()(int i, int j) const { return data[i * m + j]; }
+    Matrix(int rows, int cols, int value = 0)
+        : n(rows), m(cols),
+        data(static_cast<size_t>(rows)* static_cast<size_t>(cols), value) {}
+    inline int& operator()(int i, int j) {
+        return data[static_cast<size_t>(i) * static_cast<size_t>(m) + static_cast<size_t>(j)];
+    }
+    inline const int& operator()(int i, int j) const {
+        return data[static_cast<size_t>(i) * static_cast<size_t>(m) + static_cast<size_t>(j)];
+    }
     void assign(int value) { fill(data.begin(), data.end(), value); }
 };
 
@@ -156,7 +162,7 @@ static string chooseTxtFileInteractive() {
         if (sel == 0) return "";
         if (sel >= 1 && static_cast<size_t>(sel) <= files.size())
         {
-            return files[sel - 1].string();
+            return files[static_cast<size_t>(sel - 1)].string();
         }
     }
 }
@@ -187,7 +193,9 @@ struct Xoshiro256ss
         s[3] = rotl(s[3], 45);
         return result;
     }
-    double uniform01() { return (next() >> 11) * (1.0 / static_cast<double>(1ULL << 53)); }
+    double uniform01() {
+        return static_cast<double>(next() >> 11) * (1.0 / static_cast<double>(1ULL << 53));
+    }
     int uniformInt(int a, int b) {
         uint64_t r = next();
         return a + static_cast<int>(r % static_cast<uint64_t>(b - a + 1));
@@ -264,19 +272,19 @@ static void computeDischarge(const Matrix& I, const Matrix& T, const Matrix& FA,
     q.clear();
     if (maxT <= 0) return;
 
-    vector<double> qk(maxT + 1, 0.0); // 1..maxT
+    vector<double> qk(static_cast<size_t>(maxT) + 1, 0.0); // 1..maxT
 
     for (int i = 0; i < n; ++i) {
         for (int j = 0; j < m; ++j) {
             int tt = T(i, j);
-            if (tt >= 1 && tt <= maxT) qk[tt] += static_cast<double>(FA(i, j));
+            if (tt >= 1 && tt <= maxT) qk[static_cast<size_t>(tt)] += static_cast<double>(FA(i, j));
         }
     }
 
     q.reserve(static_cast<size_t>(maxT) + 2);
     q.push_back(0.0);
     q.push_back(static_cast<double>(I(n0, m0)));
-    for (int k = 1; k <= maxT - 1; ++k) q.push_back(qk[k]);
+    for (int k = 1; k <= maxT - 1; ++k) q.push_back(qk[static_cast<size_t>(k)]);
     q.push_back(0.0);
 }
 
@@ -364,7 +372,7 @@ static ChangeResult changeDirect2_matlab_like(
         if (loopcheck2_like_matlab(D_temp, AD, n0, m0)) continue;
 
         array<int, 4> r = { 1, 1, 1, 1 };
-        if (curdir >= 1 && curdir <= 4) r[curdir - 1] -= 1;
+        if (curdir >= 1 && curdir <= 4) r[static_cast<size_t>(curdir - 1)] -= 1;
 
         if (y + 1 >= m) r[0] -= 1;
         if (x - 1 < 0)  r[1] -= 1;
@@ -376,7 +384,9 @@ static ChangeResult changeDirect2_matlab_like(
         if (y + 1 < m && D(x, y + 1) == 3) r[0] -= 1;
         if (x + 1 < n && D(x + 1, y) == 4) r[3] -= 1;
 
-        for (int k = 0; k < 4; ++k) if (r[k] < 0) r[k] = 0;
+        for (int k = 0; k < 4; ++k) {
+            if (r[static_cast<size_t>(k)] < 0) r[static_cast<size_t>(k)] = 0;
+        }
 
         D(x, y) = newdir;
         return { D, r, x, y, true };
@@ -488,6 +498,13 @@ static void writeResultFileFromRes(const string& inputName, const Matrix& D, con
 }
 
 // Width-function distribution
+static int findLastNonzeroIndex(const vector<double>& q) {
+    for (int idx = static_cast<int>(q.size()) - 1; idx >= 0; --idx) {
+        if (q[static_cast<size_t>(idx)] != 0.0) return idx;
+    }
+    return 0;
+}
+
 static void computeWidthDistribution(const Matrix& D1, Matrix& FD, Matrix& LS) {
     int n = D1.n, m = D1.m;
     Matrix I(n, m, 1);
@@ -496,11 +513,18 @@ static void computeWidthDistribution(const Matrix& D1, Matrix& FD, Matrix& LS) {
 
     for (int i = 0; i < n; ++i) {
         for (int j = 0; j < m; ++j) {
+            if (D1(i, j) == 0) {
+                FD(i, j) = 0;
+                LS(i, j) = 0;
+                continue;
+            }
+
             QResult res = calculateQ2(D1, I, i, j);
             double maxq = 0.0;
             for (double v : res.q) if (v > maxq) maxq = v;
+
             FD(i, j) = static_cast<int>(round(maxq));
-            LS(i, j) = static_cast<int>(res.q.size()) - 1;
+            LS(i, j) = findLastNonzeroIndex(res.q);
         }
     }
 }
@@ -623,8 +647,8 @@ static int resolveThreadCount(int max_threads_user)
 }
 
 // Print/save NSE report
-// - Compute NSE between each simulated width function q_sim and the original q_original for every (k, run)
-// - For each beta(k), also compute the run-mean width function (mean_q) and its NSE against the original
+// - For each beta(k), compute the mean NSE over runs
+// - For each beta(k), compute the run-mean width function (mean_q) and its NSE against the original
 static void reportNSE_andSave(
     const string& inputName,
     const vector<double>& q_original,
@@ -633,102 +657,50 @@ static void reportNSE_andSave(
     const vector<vector<double>>& all_q,
     const vector<string>& headers
 ) {
+    (void)headers;
+
     struct BetaAgg {
         int okRuns = 0;
         int totalRuns = 0;
         double sumNSE = 0.0;
-        double minNSE = numeric_limits<double>::infinity();
-        double maxNSE = -numeric_limits<double>::infinity();
         vector<double> sumQ; // cumulative sum for mean width function
     };
 
     map<int, BetaAgg> agg; // key = k
-    vector<double> nse_run(tasks.size(), numeric_limits<double>::quiet_NaN());
 
-    // 1) NSE per run + accumulation by beta (for summary)
     for (size_t ti = 0; ti < tasks.size(); ++ti) {
         const auto& task = tasks[ti];
         agg[task.k].totalRuns++;
 
-        // Failed tasks store an empty vector in all_q[task.outIndex]
         const bool ok = results[ti].ok && !all_q[task.outIndex].empty();
         if (!ok) continue;
 
         const vector<double>& q_sim = all_q[task.outIndex];
         double nse = computeNSE(q_original, q_sim);
-        nse_run[ti] = nse;
 
         BetaAgg& A = agg[task.k];
         A.okRuns++;
 
         if (!std::isnan(nse)) {
             A.sumNSE += nse;
-            A.minNSE = min(A.minNSE, nse);
-            A.maxNSE = max(A.maxNSE, nse);
         }
 
         if (A.sumQ.size() < q_sim.size()) A.sumQ.resize(q_sim.size(), 0.0);
         for (size_t i = 0; i < q_sim.size(); ++i) A.sumQ[i] += q_sim[i];
     }
 
-    // 2) Open file
     string nseFile = makeNseFilename(inputName);
     ofstream nfs(nseFile);
     if (!nfs) {
         cerr << "Cannot open NSE result file: " << nseFile << "\n";
     }
 
-    // 3) Console/file output
-    cout << "\n\n//------ NSE comparison results (original width function vs. beta-based width functions) //------\n";
-    cout << "Rule: if lengths differ, pad with zeros before computing NSE\n";
-
-    if (nfs) {
-        nfs << "//------ NSE comparison results (original width function vs. beta-based width functions) //------\n";
-        nfs << "Rule: if lengths differ, pad with zeros before computing NSE\n\n";
-    }
-
-    // Detailed per-run output
-    cout << "\n[Per-run NSE]\n";
-    if (nfs) {
-        nfs << "[Per-run NSE]\n";
-        nfs << "k\tbeta\trun\tok\tNSE\tlabel\n";
-    }
-
-    cout << fixed << setprecision(6);
-    for (size_t ti = 0; ti < tasks.size(); ++ti) {
-        const auto& task = tasks[ti];
-        const bool ok = results[ti].ok && !all_q[task.outIndex].empty();
-        const double nse = nse_run[ti];
-
-        cout << "k=" << task.k
-            << "  beta=" << scientific << setprecision(3) << task.beta
-            << fixed << setprecision(6)
-            << "  run=" << task.run
-            << "  ok=" << (ok ? 1 : 0)
-            << "  NSE=";
-        if (std::isnan(nse)) cout << "NaN";
-        else cout << nse;
-        cout << "\n";
-
-        if (nfs) {
-            nfs << task.k << "\t"
-                << scientific << setprecision(10) << task.beta
-                << fixed << setprecision(10) << "\t"
-                << task.run << "\t"
-                << (ok ? 1 : 0) << "\t";
-            if (std::isnan(nse)) nfs << "NaN\t";
-            else nfs << nse << "\t";
-            nfs << headers[task.outIndex] << "\n";
-        }
-    }
-
-    // Summary by beta(k)
     cout << "\n[Summary by beta]\n";
-    cout << "k\t\tbeta\t\tok/total\t\tmeanNSE(run)\t\tminNSE\t\tmaxNSE\t\tNSE(mean_q)\n";
+    cout << "k\t\tbeta\t\tok/total\t\tmeanNSE(run)\t\tNSE(mean_q)\n";
 
     if (nfs) {
-        nfs << "\n[Summary by beta]\n";
-        nfs << "k\t\tbeta\t\tok/total\t\tmeanNSE(run)\t\tminNSE\t\tmaxNSE\t\tNSE(mean_q)\n";
+        nfs << "[Summary by beta]\n";
+        nfs << "k\t\tbeta\t\tok/total\t\tmeanNSE(run)\t\tNSE(mean_q)\n";
     }
 
     cout << fixed << setprecision(6);
@@ -757,12 +729,6 @@ static void reportNSE_andSave(
         if (std::isnan(meanNSE_run)) cout << "NaN\t\t";
         else cout << meanNSE_run << "\t\t";
 
-        if (std::isinf(A.minNSE)) cout << "NaN\t";
-        else cout << A.minNSE << "\t";
-
-        if (std::isinf(A.maxNSE)) cout << "NaN\t";
-        else cout << A.maxNSE << "\t";
-
         if (std::isnan(nse_meanQ)) cout << "NaN\n";
         else cout << nse_meanQ << "\n";
 
@@ -775,19 +741,12 @@ static void reportNSE_andSave(
             if (std::isnan(meanNSE_run)) nfs << "NaN\t";
             else nfs << meanNSE_run << "\t";
 
-            if (std::isinf(A.minNSE)) nfs << "NaN\t";
-            else nfs << A.minNSE << "\t";
-
-            if (std::isinf(A.maxNSE)) nfs << "NaN\t";
-            else nfs << A.maxNSE << "\t";
-
             if (std::isnan(nse_meanQ)) nfs << "NaN\n";
             else nfs << nse_meanQ << "\n";
         }
     }
 
     if (nfs) {
-        nfs << "\n(End)\n";
         nfs.close();
     }
 
@@ -991,7 +950,9 @@ int main(int argc, char* argv[])
                         const auto& task = tasks[tIndex];
 
                         try {
-                            uint64_t seed = mix_seed(baseSeed ^ (0x9E3779B97f4A7C15ULL * (tIndex + 1)) ^ (uint64_t)tid);
+                            const uint64_t taskSeed =
+                                0x9E3779B97f4A7C15ULL * static_cast<uint64_t>(tIndex + 1);
+                            uint64_t seed = mix_seed(baseSeed ^ taskSeed ^ static_cast<uint64_t>(tid));
                             Matrix Dg = gibbs4_cpp_matlab_like_seeded(n, m, task.beta, AD, n0, m0, D1, seed);
                             results[tIndex].q = computeQVector(Dg, n0, m0);
                             results[tIndex].ok = true;
@@ -1015,7 +976,7 @@ int main(int argc, char* argv[])
 
                 auto tb0 = tic();
                 vector<thread> pool;
-                pool.reserve(nThreads);
+                pool.reserve(static_cast<size_t>(nThreads));
                 for (int t = 0; t < nThreads; ++t) pool.emplace_back(worker, t);
                 for (auto& th : pool) th.join();
                 double batchSec = toc_sec(tb0);
