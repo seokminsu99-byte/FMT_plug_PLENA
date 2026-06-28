@@ -15,16 +15,18 @@ https://link.springer.com/journal/11069/submission-guidelines
 
 | File | Suggested label | Content |
 | --- | --- | --- |
-| `supplementary/online_resource_1_revised.pdf` | Online Resource 1 | Supplementary PLENA implementation notes and captions for Figure S1, Figure S2, and Figure S3. |
-| `supplementary/PLENA_beta_results_english.xlsx` | Online Resource 2 | English workbook summarizing the Seoul catchment beta-class comparison between Kim et al., 2017 and This Study. |
+| `supplementary/ESM_1.pdf` | Online Resource 1 | Supplementary PLENA implementation notes and captions for Figure S1, Figure S2, and Figure S3. |
+| `supplementary/ESM_2.xlsx` | Online Resource 2 | English workbook summarizing the Seoul catchment beta-class comparison between Kim et al., 2017 and This Study. |
 
 ## Guideline Alignment Checklist
 
 | Requirement checked against Natural Hazards / Springer guidance | Prepared status |
 | --- | --- |
 | Supplementary files are separate from the manuscript. | Prepared as separate PDF and XLSX files. |
-| Supplementary files should be cited in the manuscript text using consecutive Online Resource numbering. | PDF is prepared as Online Resource 1; workbook can be cited as Online Resource 2 if submitted. |
-| Supplementary figures should have captions or descriptive text. | Figure S1, Figure S2, and Figure S3 each have captions in `online_resource_1_revised.pdf`. |
+| Supplementary files should use consecutive file numbering. | Files are named `ESM_1.pdf` and `ESM_2.xlsx`. |
+| Supplementary files should be cited in the manuscript text using consecutive Online Resource numbering. | `ESM_1.pdf` is Online Resource 1; `ESM_2.xlsx` is Online Resource 2. |
+| Each supplementary file should include article title, journal name, author names, affiliation, and corresponding-author e-mail. | `ESM_1.pdf` includes the metadata on page 1; `ESM_2.xlsx` includes the metadata in the `Metadata` sheet. |
+| Supplementary figures should have captions or descriptive text. | Figure S1, Figure S2, and Figure S3 each have captions in `ESM_1.pdf`. |
 | Spreadsheet supplementary data should use a standard spreadsheet format. | The result table is prepared as `.xlsx`. |
 | Supplementary material should not introduce unsupported claims beyond the manuscript. | The PDF and workbook are restricted to PLENA. FMT is not presented as a completed or validated method. |
 
@@ -38,19 +40,20 @@ The beta classes and width functions are structural indicators. They are not dir
 
 ## Excel Workbook QA
 
-Workbook: `supplementary/PLENA_beta_results_english.xlsx`
+Workbook: `supplementary/ESM_2.xlsx`
 
+- Metadata sheet: `Metadata`
 - Main sheet: `PLENA Results`
+- Summary sheet: `Summary`
 - Rows: 239 catchments
 - Main columns: `Catchment ID`, `Catchment Name`, `Kim et al., 2017`, `This Study`
 - Row order: same as the source workbook, Catchment ID 1-239
 - Source workbook labels converted:
   - source comparison column -> `Kim et al., 2017`
   - current-study result column -> `This Study`
-- Catchment-name traceability is retained in the workbook's `Name Audit` sheet.
 - Verification:
   - The output workbook was reopened after export.
   - `PLENA Results` contains 239 data rows and 4 main columns.
   - Catchment IDs are ordered 1-239.
   - Formula-error scan returned zero matches.
-  - Rendered previews of the main sheet, audit sheet, and summary sheet were visually checked.
+  - Rendered previews of the metadata, main, and summary sheets were visually checked.
