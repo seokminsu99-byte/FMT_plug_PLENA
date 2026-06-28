@@ -2,7 +2,7 @@
 
 PLENA is a C++ implementation of the one-parameter Gibbs model for drainage-network analysis. It generates a new drainage-direction/network matrix from an input matrix and supports downstream width-function estimation and hydrologic-response analysis. The program can be used as a standalone tool and can also be integrated as a plug-in module for the FMT workflow.
 
-Current version: v0.9
+Current version: v0.9.1
 
 ## Build
 
