@@ -38,7 +38,7 @@ The manuscript source indicates that FMT is not the focus of the current paper. 
 
 The beta classes and width functions are structural indicators. They are not direct hydraulic-risk, pipe-capacity, slope, roughness, pump-operation, downstream water-level, inundation-depth, or flood-probability indicators.
 
-## Excel Workbook QA
+## Excel Workbook Summary
 
 Workbook: `supplementary/ESM_2.xlsx`
 
@@ -51,9 +51,3 @@ Workbook: `supplementary/ESM_2.xlsx`
 - Source workbook labels converted:
   - source comparison column -> `Kim et al., 2017`
   - current-study result column -> `This Study`
-- Verification:
-  - The output workbook was reopened after export.
-  - `PLENA Results` contains 239 data rows and 4 main columns.
-  - Catchment IDs are ordered 1-239.
-  - Formula-error scan returned zero matches.
-  - Rendered previews of the metadata, main, and summary sheets were visually checked.
