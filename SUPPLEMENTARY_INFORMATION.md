@@ -5,7 +5,7 @@ https://link.springer.com/journal/11069/submission-guidelines
 
 ## Article Metadata
 
-- Article title: High-Performance C++ Reimplementation and Optimization of the Gibbs' Model for Analyzing Structural Complexity in Urban Drainage Networks
+- Article title: City-Wide Assessment of Structural Complexity in Urban Drainage Networks Using Gibbs’ Model for Flood Risk Management
 - Journal: Natural Hazards
 - Authors: Changmin Park, Minsoo Seok, Yongwon Seo
 - Affiliation: Department of Civil Engineering, Yeungnam University, Gyeongsan, Republic of Korea
