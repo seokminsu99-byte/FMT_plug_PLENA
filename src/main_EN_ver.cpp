@@ -311,8 +311,8 @@ static QResult calculateQ2(const Matrix& D, const Matrix& I, int n0, int m0) {
     return { FA, T, q };
 }
 
-// loopcheck2: reachability
-static bool loopcheck2_like_matlab(const Matrix& D, const Matrix& AD, int n0, int m0) {
+// Returns true when at least one active cell cannot reach the outlet.
+static bool has_unreachable_active_cell(const Matrix& D, const Matrix& AD, int n0, int m0) {
     Matrix T(D.n, D.m, 0);
     computeTravelTime(D, T, n0, m0);
     for (int i = 0; i < D.n; ++i) {
@@ -374,7 +374,7 @@ static ChangeResult changeDirect2_matlab_like(
 
         Matrix D_temp = D;
         D_temp(x, y) = newdir;
-        if (loopcheck2_like_matlab(D_temp, AD, n0, m0)) continue;
+        if (has_unreachable_active_cell(D_temp, AD, n0, m0)) continue;
 
         array<int, 4> r = { 1, 1, 1, 1 };
         if (curdir >= 1 && curdir <= 4) r[static_cast<size_t>(curdir - 1)] -= 1;
@@ -834,7 +834,7 @@ int main(int argc, char* argv[])
             return 1;
         }
 
-        if (!loopcheck2_like_matlab(D1, AD, n0, m0)) {
+        if (has_unreachable_active_cell(D1, AD, n0, m0)) {
             cerr << "Invalid drainage network: at least one active cell does not "
                 << "reach the specified outlet.\n";
             return 1;
