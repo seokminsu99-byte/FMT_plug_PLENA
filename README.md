@@ -1,99 +1,71 @@
 # FMT_plug_PLENA
 
-PLENA is a C++ implementation of the one-parameter Gibbs model for drainage-network analysis. It generates a new drainage-direction/network matrix from an input matrix and supports downstream width-function estimation and hydrologic-response analysis. The program can be used as a standalone tool and can also be integrated as a plug-in module for the FMT workflow.
+PLENA (Program for Large-scale Evaluation of Network Analysis) is a C++17 implementation of the one-parameter Gibbs model for drainage-network analysis. It generates stochastic drainage-direction networks, evaluates outlet-referenced width functions, and supports beta-class estimation with Nash-Sutcliffe efficiency (NSE).
 
-Current version: v0.9.1
+Current version: `v0.9.1`
 
 ## Build
 
-Compile the program with:
+Compile the checked source with a C++17 compiler:
 
 ```bash
 g++ -O2 -std=c++17 src/main_EN_ver.cpp -o PLENA
 ```
 
-## Usage
+## Run
 
-The example below assumes that the program reads a single plain-text input file.
+Pass an input file on the command line:
 
 ```bash
 ./PLENA example.txt
 ```
 
-If your current implementation uses a different command-line syntax, adjust the command accordingly.
+If no path is supplied, PLENA lists eligible text files in the working directory and prompts for a selection. The remaining calculation settings are entered interactively.
 
 ## Input format
 
-The input must be provided as a plain-text (`.txt`) file.
+The plain-text input contains:
 
-The input file contains:
-1. the number of rows and columns,
-2. the outlet row and column, and
+1. the number of rows and columns;
+2. the one-based outlet row and column; and
 3. the drainage-direction matrix.
 
-Direction coding:
-- `0` = no pipe
-- `1` = East
-- `2` = South
-- `3` = West
-- `4` = North
+Direction codes are:
 
-See `example.txt` for a sample input and `example_explain.txt` for additional explanation.
+- `0`: inactive cell / no pipe
+- `1`: east
+- `2`: south
+- `3`: west
+- `4`: north
 
-## Output
+See [`example.txt`](example.txt) and [`example_explain.txt`](example_explain.txt).
 
-The program produces output files in TXT and CSV formats.
+## Outputs
 
-The outputs may include:
-- a generated drainage-direction/network matrix (`.txt`), and
-- analysis-ready output data for downstream processing (`.csv`).
+The primary result text file contains the generated direction matrix, travel-time matrix, flow-accumulation matrix, and `q(t)`. Optional width-function analysis also writes FD and LS matrices, width-function CSV data, and an NSE report for the candidate beta classes.
 
-These outputs can be used for width-function computation and hydrologic-response analysis.
+## SERRA online resources
 
-## Example
+The repository contains the online resources prepared for *Stochastic Environmental Research and Risk Assessment* (SERRA):
 
-Sample files are provided in the repository root:
-- `example.txt`
-- `example_explain.txt`
+- [`supplementary/ESM_1.pdf`](supplementary/ESM_1.pdf): PLENA implementation details, reproducible workflow, supplementary figures, and computational-performance results.
+- [`supplementary/ESM_2.xlsx`](supplementary/ESM_2.xlsx): catchment-level beta classifications for 239 Seoul drainage catchments, comparison with Seo et al. (2024), and candidate beta-specific NSE summaries from the supplied result files.
 
-A typical run is:
-
-```bash
-./PLENA example.txt
-```
+See [`SUPPLEMENTARY_INFORMATION.md`](SUPPLEMENTARY_INFORMATION.md) for article metadata, captions, data-coverage notes, and the SERRA compliance checklist.
 
 ## Citation
 
-Please cite this repository using the metadata provided in `CITATION.cff`.
+Please use the repository metadata in [`CITATION.cff`](CITATION.cff).
 
 ## License
 
-MIT License (see `LICENSE`).
+This repository is distributed under the [MIT License](LICENSE).
 
-## Provenance / Attribution
+## Provenance and attribution
 
-**Author:** Seok Minsoo / seokminsu10@yu.ac.kr
+**Implementation author:** Minsoo Seok (`seokminsu10@yu.ac.kr`)
 
-### Author responsibility
-- The author performed the C++ porting/implementation, experiments, analysis, and verification.
-- The author takes full responsibility for the final code, results, interpretations, and manuscript.
-
-### 1) MATLAB -> C++ port (used with permission)
-- Core workflow (e.g., `changedirect2`, `loopcheck2`, Gibbs update loop, etc.) was ported to C++ based on a MATLAB reference implementation provided by Seo & Schmidt.
-- C++ porting and modifications: Seok Minsoo (seokminsu10@yu.ac.kr).
-- This repository includes a derivative implementation based on the provided reference code, used within the scope of the granted permission.
-
-### 2) PRNG (third-party component)
-- Uses the `xoshiro256**` reference implementation by David Blackman & Sebastiano Vigna.
-- The upstream reference includes a public-domain-style dedication / broad permission notice and an “AS IS” (no-warranty) disclaimer.
-- Reference: <https://prng.di.unimi.it/xoshiro256starstar.c>
-
-### 3) Seed mixing (hash finalizer pattern / constants)
-- Uses an `fmix64`-style finalizer pattern/constants commonly used with MurmurHash3.
-- MurmurHash3 is widely distributed with a public-domain disclaimer in the upstream source header.
-- Reference example: <https://github.com/rurban/smhasher/blob/master/MurmurHash3.cpp>
-
-### 4) AI assistance (transparent disclosure)
-- The NSE (Nash–Sutcliffe Efficiency) function was written by a conversational AI tool.
-- Multithreading: the author proposed the idea/direction. Unless explicitly stated otherwise, implementation/coding is considered integrated and reviewed under the author’s responsibility.
-- In addition, limited assistance from a conversational AI tool was used for debugging suggestions, language polishing of text/comments, and code cleanup (readability-oriented refactoring).
+- The C++ implementation was ported and extended from a MATLAB reference implementation supplied by Seo and Schmidt with permission. Minsoo Seok performed the C++ porting, experiments, analysis, and verification and takes responsibility for the final repository content.
+- The pseudorandom number generator follows the `xoshiro256**` reference implementation by David Blackman and Sebastiano Vigna: <https://prng.di.unimi.it/xoshiro256starstar.c>.
+- Seed mixing uses an `fmix64`-style finalizer pattern associated with MurmurHash3: <https://github.com/rurban/smhasher/blob/master/MurmurHash3.cpp>.
+- A conversational AI tool assisted with the NSE function, debugging suggestions, language polishing, and readability-oriented cleanup. The author reviewed and integrated the resulting code and retains responsibility for it.
