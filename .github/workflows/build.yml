@@ -1,0 +1,31 @@
+name: Build and smoke test
+
+on:
+  push:
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Build PLENA
+        run: g++ -O2 -std=c++17 -Wall -Wextra -pedantic src/main_EN_ver.cpp -o PLENA
+
+      - name: Run valid-input smoke test
+        run: |
+          printf '%s\n' '-2' 'n' '0' | ./PLENA example.txt
+          test -s example_result.txt
+
+      - name: Reject an invalid direction code
+        run: |
+          printf '1 1\n1 1\n33\n' > invalid_direction.txt
+          if ./PLENA invalid_direction.txt; then
+            echo 'PLENA accepted an invalid direction code.' >&2
+            exit 1
+          fi

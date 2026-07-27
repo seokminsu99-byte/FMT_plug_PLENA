@@ -1,0 +1,17 @@
+# Local build products
+/PLENA
+/PLENA.exe
+*.o
+*.obj
+
+# PLENA-generated analysis files
+*_result.txt
+*_NSE.txt
+*_FD.csv
+*_LS.csv
+*_width_functions.csv
+
+# Editor and Office lock files
+~$*
+.DS_Store
+Thumbs.db

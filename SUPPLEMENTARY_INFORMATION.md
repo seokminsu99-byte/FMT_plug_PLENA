@@ -14,17 +14,20 @@ Official journal guidance: [Stochastic Environmental Research and Risk Assessmen
 
 | File | Manuscript label | Concise caption |
 | --- | --- | --- |
-| [`supplementary/ESM_1.pdf`](supplementary/ESM_1.pdf) | Online Resource 1 | PLENA implementation details and reproducible computational workflow. The PDF contains supplementary figures, input-file and flow-direction descriptions, compilation and execution procedures, output-file descriptions, implementation notes, and computational-performance results. |
-| [`supplementary/ESM_2.xlsx`](supplementary/ESM_2.xlsx) | Online Resource 2 | Catchment-level beta estimates and NSE results for the 239 drainage catchments in Seoul. The workbook contains final PLENA beta classes, comparison values from Seo et al. (2024), and candidate beta-specific NSE summaries from the supplied result files. |
+| [`supplementary/ESM_1.pdf`](supplementary/ESM_1.pdf) | Online Resource 1 | PLENA implementation details and reproducible computational workflow. This PDF contains supplementary figures, descriptions of the input-file structure and flow-direction coding, compilation and execution procedures, output-file descriptions, implementation notes, and additional computational-performance results. |
+| [`supplementary/ESM_2.xlsx`](supplementary/ESM_2.xlsx) | Online Resource 2 | Catchment-level beta estimates and NSE results for the 239 drainage catchments in Seoul. This spreadsheet separates the best beta estimate for each drainage catchment from the NSE summaries for all candidate beta classes and includes comparisons between PLENA-based estimates and previous MATLAB-based estimates. |
 
-## Online Resource 2 data scope
+## Online Resource 1 figure inventory
 
-- `Catchment Results` contains all 239 catchments in ID order, including 237 valid PLENA classifications and 2 inputs without a valid classification.
+- **Figure S1:** contiguous matrix storage and cache locality.
+- **Figure S2:** parallel PLENA execution and processor utilization.
+- **Figure S3:** generation-time comparison between the MATLAB-based Gibbs-model implementation and PLENA across the tested network sizes.
+
+## Online Resource 2 contents
+
+- `Best Beta Results` contains all 239 catchments in ID order, including 237 valid PLENA classifications and 2 inputs without a valid classification.
 - The final PLENA distribution is: `10^-4` = 11, `10^-3` = 84, `10^-2` = 122, `10^-1` = 17, `10^0` = 1, `10^1` = 2, and not classified = 2.
-- `Candidate NSE` contains eight candidate-class summaries from each of 231 supplied result files, for 1,848 rows in total.
-- The 231 result files cover 227 unique catchments because four catchment IDs have two supplied files. All are retained; the validated file is marked `Selected source = Yes`.
-- Candidate-level values are absent where no corresponding result file was supplied. Missing NSE values were not estimated or imputed.
-- `Candidate NSE` reports `k`, `beta`, mean NSE, and `NSE(mean_q)`, matching the checked PLENA summary structure. Mean NSE summarizes the stochastic realizations for each candidate class, while `NSE(mean_q)` evaluates the corresponding mean simulated width function.
+- `All Beta NSE` reports `k`, `beta`, mean NSE, and `NSE(mean_q)` for every available candidate class.
 - The comparison field is labeled `Seo et al. (2024)` throughout.
 
 Comparison reference:
@@ -41,7 +44,7 @@ Comparison reference:
 | Each file includes the article title, journal, authors, affiliation, and corresponding-author email. | Metadata appear on page 1 of `ESM_1.pdf` and in the `Metadata` sheet of `ESM_2.xlsx`. |
 | Each file has a concise manuscript caption. | Captions are recorded above and match the intended Online Resource numbering. |
 | Supplementary figures have descriptive captions. | Figures S1-S3 have captions that explain the visual content and its relationship to PLENA. |
-| Published files must be self-contained because supplementary information is published as received. | Definitions, workflow notes, source links, column meanings, and coverage limitations are included in the files. |
+| Published files must be self-contained because supplementary information is published as received. | Definitions, workflow notes, source links, and column meanings are included in the files. |
 
 ## Interpretation boundary
 
