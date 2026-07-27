@@ -1,6 +1,6 @@
 /*
 FMT_plug tool - PLENA_ENG ver
-ver. 0.9.1
+ver. 0.9.2
 
 PROVENANCE / ATTRIBUTION
 
@@ -57,6 +57,8 @@ language polishing of text/comments, and code cleanup (readability-oriented refa
 #include <mutex>
 #include <exception>
 #include <cstddef>   // std::size_t
+#include <cstdint>   // uint64_t
+#include <cstdlib>   // system
 #include <iomanip>   // setprecision, fixed, scientific
 #include <map>       // summary by beta(k)
 
@@ -74,6 +76,9 @@ static constexpr int FIX_J_1BASED = 14;
 
 // Prevent infinite loop in changedirect2 (mark task as failed on repeated failure)
 static constexpr int CHANGE_MAX_TRIES = 200000;
+
+// Study configuration: I = alpha * n * m with alpha = 10.
+static constexpr int ITERATION_COEFFICIENT = 10;
 
 // Matrix (contiguous memory)
 struct Matrix
@@ -413,9 +418,10 @@ static Matrix gibbs4_cpp_matlab_like_seeded(
         return static_cast<double>(s);
         };
 
-    int maxIter = 10 * n * m;
+    const long long maxIter =
+        static_cast<long long>(ITERATION_COEFFICIENT) * n * m;
 
-    for (int iter = 0; iter < maxIter; ++iter) {
+    for (long long iter = 0; iter < maxIter; ++iter) {
         Matrix D_old = D;
         Matrix D_temp = D;
 
@@ -807,6 +813,12 @@ int main(int argc, char* argv[])
                     cerr << "File format error: insufficient data for D matrix\n";
                     return 1;
                 }
+                if (val < 0 || val > 4) {
+                    cerr << "Invalid direction code " << val
+                        << " at row " << (i + 1) << ", column " << (j + 1)
+                        << ". Allowed values are 0, 1, 2, 3, and 4.\n";
+                    return 1;
+                }
                 D1(i, j) = val;
             }
         }
@@ -819,6 +831,12 @@ int main(int argc, char* argv[])
 
         if (AD(n0, m0) == 0) {
             cerr << "Error: the outlet location is outside AD (valid-cell mask). (D1 is 0)\n";
+            return 1;
+        }
+
+        if (!loopcheck2_like_matlab(D1, AD, n0, m0)) {
+            cerr << "Invalid drainage network: at least one active cell does not "
+                << "reach the specified outlet.\n";
             return 1;
         }
 
