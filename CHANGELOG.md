@@ -1,5 +1,24 @@
 # Changelog
 
+## v0.9.4 - 2026-07-27
+
+This release retains the one-parameter Gibbs model and the Seo-Schmidt MATLAB
+lineage while aligning the public C++ transition workflow, documentation, and
+SERRA Online Resource 1.
+
+- Uniformly selects one non-outlet active cell and one of its three alternative
+  directions before candidate screening.
+- Treats locally screened and outlet-unreachable proposals as self-transitions
+  and counts every proposal attempt toward `I = alpha * n * m`.
+- Applies `min(1, exp(-beta * DeltaH))` as the conditional acceptance
+  probability after the candidate has been selected.
+- Adds an automatic default seed, optional fixed diagnostic seed, input
+  validation, sampler metadata, and a small transition-kernel self-test.
+- Updates the build workflow, source documentation, provenance description,
+  and Online Resource 1 to match the released implementation.
+- Retains the existing author responsibility, software lineage, third-party
+  source, and AI-use disclosures.
+
 ## v0.9.3 - 2026-07-27
 
 This is a repository-packaging and provenance release. It does not introduce a

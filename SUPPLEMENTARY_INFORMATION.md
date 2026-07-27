@@ -14,24 +14,40 @@ Official journal guidance: [Stochastic Environmental Research and Risk Assessmen
 
 | File | Manuscript label | Concise caption |
 | --- | --- | --- |
-| [`supplementary/ESM_1.pdf`](supplementary/ESM_1.pdf) | Online Resource 1 | PLENA implementation details and reproducible computational workflow. This PDF contains supplementary figures, descriptions of the input-file structure and flow-direction coding, compilation and execution procedures, output-file descriptions, implementation notes, and additional computational-performance results. |
+| [`supplementary/ESM_1.pdf`](supplementary/ESM_1.pdf) | Online Resource 1 | PLENA implementation details and reproducible computational workflow. This PDF contains supplementary figures, descriptions of the input-file structure and flow-direction coding, compilation and execution procedures, candidate generation and acceptance rules, output-file descriptions, implementation notes, and additional computational-performance results. |
 | [`supplementary/ESM_2.xlsx`](supplementary/ESM_2.xlsx) | Online Resource 2 | Catchment-level beta estimates and NSE results for the 239 drainage catchments in Seoul. This spreadsheet separates the best beta estimate for each drainage catchment from the NSE summaries for all candidate beta classes and includes comparisons between PLENA-based estimates and previous MATLAB-based estimates. |
 
 ## Code identity and provenance
 
-- [`src/main_EN_ver.cpp`](src/main_EN_ver.cpp) is the sole canonical source and
-  is synchronized with the authors' `PLENA_FINAL v0.9` research implementation.
+- [`src/main_EN_ver.cpp`](src/main_EN_ver.cpp) is the sole canonical source for
+  repository release `v0.9.4` and retains the authors' `PLENA_FINAL v0.9` and
+  Seo-Schmidt MATLAB lineage.
 - FMT prepares and validates the drainage-direction inputs used in the study;
-  PLENA checks outlet reachability for every proposed stochastic state.
-- The MATLAB-to-C++ lineage, verified baseline source hash, third-party
-  technical components, author responsibilities, and AI-assisted development
-  boundaries are documented in [`PROVENANCE.md`](PROVENANCE.md).
+  the public PLENA source also validates the input and checks outlet
+  reachability for every proposed stochastic state.
+- The MATLAB-to-C++ lineage, third-party technical components, author
+  responsibilities, and existing AI-assisted development boundaries are
+  documented in [`PROVENANCE.md`](PROVENANCE.md).
 
 ## Online Resource 1 figure inventory
 
 - **Figure S1:** contiguous matrix storage and cache locality.
 - **Figure S2:** parallel PLENA execution and processor utilization.
 - **Figure S3:** generation-time comparison between the MATLAB-based Gibbs-model implementation and PLENA across the tested network sizes.
+
+## Online Resource 1 implementation coverage
+
+- Each stochastic update uniformly selects one non-outlet active cell and one
+  of the three alternative flow directions.
+- Boundary, inactive-cell, immediate two-cycle, and outlet-unreachable
+  proposals are retained as self-transitions; every proposal attempt counts
+  toward `I = alpha * n * m`.
+- For an outlet-reachable proposal, the conditional acceptance probability is
+  `min(1, exp(-beta * DeltaH))`. The proposal selection supplies the separate
+  `1/r` factor in the general transition rule, where `r = 3*N_u` and `N_u` is
+  the number of non-outlet active cells.
+- Independent beta-class and replicate tasks are parallelized; updates within
+  an individual stochastic chain remain sequential.
 
 ## Online Resource 2 contents
 

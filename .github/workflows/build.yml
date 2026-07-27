@@ -15,18 +15,29 @@ jobs:
         uses: actions/checkout@v4
 
       - name: Build PLENA
-        run: g++ -O2 -std=c++17 -Wall -Wextra -pedantic src/main_EN_ver.cpp -o PLENA
+        run: g++ -O2 -std=c++17 -pthread -Wall -Wextra -pedantic src/main_EN_ver.cpp -o PLENA
+
+      - name: Verify transition kernel
+        run: ./PLENA --self-test
 
       - name: Run valid-input smoke test
         run: |
-          printf '%s\n' '-2' 'n' '0' | ./PLENA example.txt
+          printf '%s\n' '-2' '0' 'n' | ./PLENA example.txt
           test -s example_result.txt
 
       - name: Exercise width-function and NSE batch paths
         run: |
           printf '3 3\n3 3\n1 1 2\n1 1 2\n1 1 1\n' > smoke_input.txt
-          printf '%s\n' '-2' 'y' 'y' 'y' '-4' '-4' '1' '1' '0' | ./PLENA smoke_input.txt
+          printf '%s\n' '-2' '1' 'y' 'y' 'y' '-4' '-4' '1' '1' | ./PLENA smoke_input.txt
           test -s smoke_input_NSE.txt
           test -s smoke_input.txt_width_functions.csv
           test -s smoke_input.txt_FD.csv
           test -s smoke_input.txt_LS.csv
+
+      - name: Reject an invalid direction code
+        run: |
+          printf '1 1\n1 1\n33\n' > invalid_direction.txt
+          if ./PLENA invalid_direction.txt; then
+            echo 'PLENA accepted an invalid direction code.' >&2
+            exit 1
+          fi

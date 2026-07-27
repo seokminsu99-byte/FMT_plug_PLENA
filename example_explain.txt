@@ -38,25 +38,25 @@ FMT boundary
 ------------
 
 In the study workflow, FMT prepares and validates these conditions before the
-file is supplied to PLENA. The synchronized PLENA_FINAL v0.9 loader checks the
-grid dimensions, matrix completeness, outlet bounds, and active outlet. It
-assumes FMT has already checked the direction-code range and initial full-
-network outlet reachability. PLENA separately checks outlet reachability for
-every proposed stochastic network state.
+file is supplied to PLENA. The public source also checks the grid dimensions,
+matrix completeness, direction-code range, outlet bounds, active outlet, and
+initial full-network outlet reachability. PLENA separately checks outlet
+reachability for every proposed stochastic network state.
 
 Build and run
 -------------
 
 Linux or macOS:
-    g++ -O2 -std=c++17 src/main_EN_ver.cpp -o PLENA
+    g++ -O2 -std=c++17 -pthread src/main_EN_ver.cpp -o PLENA
     ./PLENA example.txt
 
 Windows with MinGW:
-    g++ -O2 -std=c++17 src/main_EN_ver.cpp -o PLENA.exe
+    g++ -O2 -std=c++17 -pthread src/main_EN_ver.cpp -o PLENA.exe
     PLENA.exe example.txt
 
-The program then prompts for the beta exponent, optional width-function
-analysis, candidate beta range, number of stochastic realizations, and thread
-cap. A thread cap of 0 requests automatic selection from the available hardware
+The program then prompts for the beta exponent, the update coefficient alpha,
+optional width-function analysis, candidate beta range, number of stochastic
+realizations, and thread cap. Entering alpha = 0 selects the study setting of
+10. A thread cap of 0 requests automatic selection from the available hardware
 concurrency. The batch interface initially offers k = -4 through 3 and 100
 stochastic realizations per candidate; both values can be changed interactively.
