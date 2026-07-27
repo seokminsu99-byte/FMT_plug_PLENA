@@ -26,13 +26,23 @@ Direction codes
 3 = west
 4 = north
 
-Validation requirements
------------------------
+Input contract
+--------------
 
 - The matrix must contain exactly n x m direction values.
 - Every value must be an integer from 0 through 4.
 - The outlet cell must be active.
 - Every active cell must eventually reach the specified outlet.
+
+FMT boundary
+------------
+
+In the study workflow, FMT prepares and validates these conditions before the
+file is supplied to PLENA. The synchronized PLENA_FINAL v0.9 loader checks the
+grid dimensions, matrix completeness, outlet bounds, and active outlet. It
+assumes FMT has already checked the direction-code range and initial full-
+network outlet reachability. PLENA separately checks outlet reachability for
+every proposed stochastic network state.
 
 Build and run
 -------------
@@ -48,4 +58,5 @@ Windows with MinGW:
 The program then prompts for the beta exponent, optional width-function
 analysis, candidate beta range, number of stochastic realizations, and thread
 cap. A thread cap of 0 requests automatic selection from the available hardware
-concurrency.
+concurrency. The batch interface initially offers k = -4 through 3 and 100
+stochastic realizations per candidate; both values can be changed interactively.

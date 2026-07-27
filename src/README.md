@@ -1,5 +1,11 @@
-# PLENA source files
+# PLENA source
 
-`main_EN_ver.cpp` is the canonical English source and the public build target for release `v0.9.2`. The automated build and smoke test compile this file.
+[`main_EN_ver.cpp`](main_EN_ver.cpp) is the sole canonical source and public
+build target for repository release `v0.9.3`.
 
-`main.cpp` is the Korean-console variant retained for users who need Korean prompts. Its diagnostic text and generated result filenames differ from the canonical English release, so outputs from the two variants should not be mixed without checking their formats.
+Its computational body is synchronized with the authors' `PLENA_FINAL v0.9`
+research implementation. The public copy differs from the verified baseline
+only in its attribution header, explicit standard-library includes, one ASCII
+comment normalization, and final newline; the computational logic is unchanged. See
+[`../PROVENANCE.md`](../PROVENANCE.md) for the baseline SHA-256, software
+lineage, third-party sources, and AI-use disclosure.
