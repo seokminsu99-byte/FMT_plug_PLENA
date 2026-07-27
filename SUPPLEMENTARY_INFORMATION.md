@@ -17,6 +17,16 @@ Official journal guidance: [Stochastic Environmental Research and Risk Assessmen
 | [`supplementary/ESM_1.pdf`](supplementary/ESM_1.pdf) | Online Resource 1 | PLENA implementation details and reproducible computational workflow. This PDF contains supplementary figures, descriptions of the input-file structure and flow-direction coding, compilation and execution procedures, output-file descriptions, implementation notes, and additional computational-performance results. |
 | [`supplementary/ESM_2.xlsx`](supplementary/ESM_2.xlsx) | Online Resource 2 | Catchment-level beta estimates and NSE results for the 239 drainage catchments in Seoul. This spreadsheet separates the best beta estimate for each drainage catchment from the NSE summaries for all candidate beta classes and includes comparisons between PLENA-based estimates and previous MATLAB-based estimates. |
 
+## Code identity and provenance
+
+- [`src/main_EN_ver.cpp`](src/main_EN_ver.cpp) is the sole canonical source and
+  is synchronized with the authors' `PLENA_FINAL v0.9` research implementation.
+- FMT prepares and validates the drainage-direction inputs used in the study;
+  PLENA checks outlet reachability for every proposed stochastic state.
+- The MATLAB-to-C++ lineage, verified baseline source hash, third-party
+  technical components, author responsibilities, and AI-assisted development
+  boundaries are documented in [`PROVENANCE.md`](PROVENANCE.md).
+
 ## Online Resource 1 figure inventory
 
 - **Figure S1:** contiguous matrix storage and cache locality.

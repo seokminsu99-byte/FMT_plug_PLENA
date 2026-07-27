@@ -1,42 +1,39 @@
 /*
-FMT_plug tool - PLENA_ENG ver
-ver. 0.9.2
+FMT_plug tool - PLENA_ENG
+Research implementation: PLENA_FINAL v0.9
+Repository packaging revision: v0.9.3
 
-PROVENANCE / ATTRIBUTION
+PROVENANCE AND RESPONSIBILITY
 
-Author: Seok Minsoo / seokminsu10@yu.ac.kr
+Research authors: Changmin Park, Minsoo Seok, and Yongwon Seo
+Lead C++ implementation: Minsoo Seok / seokminsu10@yu.ac.kr
 
-Author responsibility
-- The author performed the C++ porting/implementation, experiments, analysis, and verification.
-- The author takes full responsibility for the final code, results, interpretations, and manuscript.
+- The core changedirect2, loopcheck2, and Gibbs-update workflow was ported
+  with permission from the MATLAB reference implementation provided by
+  Yongwon Seo and A. R. Schmidt. Yongwon Seo is a co-author of the study.
+- Minsoo Seok performed the C++ porting, implementation, experiments,
+  analysis, and verification. The authors reviewed the released software
+  and retain responsibility for the code, results, and interpretations.
+- Author-developed additions include batch scheduling, progress reporting,
+  file I/O and selection, failure handling, result writing, and the parallel
+  execution workflow.
 
+THIRD-PARTY TECHNICAL SOURCES
 
-In addition, limited assistance from a conversational AI tool was used for debugging suggestions,
-language polishing of text/comments, and code cleanup (readability-oriented refactoring).
+- PRNG: xoshiro256** reference implementation by David Blackman and
+  Sebastiano Vigna, https://prng.di.unimi.it/xoshiro256starstar.c
+- Seed mixing: fmix64-style finalizer pattern and constants associated with
+  MurmurHash3, https://github.com/rurban/smhasher/blob/master/MurmurHash3.cpp
 
+AI-ASSISTED DEVELOPMENT DISCLOSURE
 
-1) MATLAB -> C++ port (used with permission)
-- Core workflow (e.g., changedirect2 / loopcheck2 / Gibbs update loop, etc.) was ported to C++ based on a MATLAB reference implementation provided by Seo & Schmidt.
-- C++ porting and modifications: Seok Minsoo (seokminsu10@yu.ac.kr).
-- This repository includes a derivative implementation based on the provided reference code, used within the scope of the granted permission.
-
-2) PRNG (third-party component)
-- Uses the xoshiro256** reference implementation by David Blackman & Sebastiano Vigna.
-- The upstream reference includes a public-domain-style dedication / broad permission notice and an “AS IS” (no-warranty) disclaimer.
-- Reference: https://prng.di.unimi.it/xoshiro256starstar.c
-
-3) Seed mixing (hash finalizer pattern / constants)
-- Uses an fmix64-style finalizer pattern/constants commonly used with MurmurHash3.
-- MurmurHash3 is widely distributed with a public domain disclaimer in the upstream source header.
-- Reference example: https://github.com/rurban/smhasher/blob/master/MurmurHash3.cpp
-
-4) AI assistance (transparent disclosure)
-- The NSE (Nash–Sutcliffe Efficiency) function was written by a conversational AI tool.
-- Multithreading: the author proposed the idea/direction. (Unless explicitly stated otherwise, implementation/coding is considered integrated and reviewed under the author’s responsibility.)
-- In addition, limited assistance from a conversational AI tool was used for debugging suggestions, language polishing of text/comments, and code cleanup (readability-oriented refactoring).
-
-5) Additional modifications by the author (examples)
-- Batch execution (task scheduling, progress reporting), file I/O and file-selection UI, robust failure handling (e.g., CHANGE_MAX_TRIES), result writing (txt/csv), and reproducibility-related logging.
+- The NSE routine was initially drafted with conversational-AI assistance.
+  Conversational AI tools, including OpenAI Codex, also assisted with
+  debugging suggestions, English-language polishing, and readability-oriented
+  code and repository cleanup.
+- The multithreading concept and development direction were specified by the
+  author. All AI-assisted material was reviewed and integrated under the
+  authors' responsibility; AI tools are not authors or scientific sources.
 */
 
 /////////////////////////////// Header files //////////////////////////////
@@ -76,9 +73,6 @@ static constexpr int FIX_J_1BASED = 14;
 
 // Prevent infinite loop in changedirect2 (mark task as failed on repeated failure)
 static constexpr int CHANGE_MAX_TRIES = 200000;
-
-// Study configuration: I = alpha * n * m with alpha = 10.
-static constexpr int ITERATION_COEFFICIENT = 10;
 
 // Matrix (contiguous memory)
 struct Matrix
@@ -311,8 +305,17 @@ static QResult calculateQ2(const Matrix& D, const Matrix& I, int n0, int m0) {
     return { FA, T, q };
 }
 
-// Returns true when at least one active cell cannot reach the outlet.
-static bool has_unreachable_active_cell(const Matrix& D, const Matrix& AD, int n0, int m0) {
+static double computeHOnly(const Matrix& D, int n0, int m0) {
+    Matrix T(D.n, D.m, 0);
+    computeTravelTime(D, T, n0, m0);
+
+    long long sumT = 0;
+    for (int v : T.data) sumT += v;
+    return static_cast<double>(sumT);
+}
+
+// loopcheck2: reachability
+static bool loopcheck2_like_matlab(const Matrix& D, const Matrix& AD, int n0, int m0) {
     Matrix T(D.n, D.m, 0);
     computeTravelTime(D, T, n0, m0);
     for (int i = 0; i < D.n; ++i) {
@@ -374,7 +377,7 @@ static ChangeResult changeDirect2_matlab_like(
 
         Matrix D_temp = D;
         D_temp(x, y) = newdir;
-        if (has_unreachable_active_cell(D_temp, AD, n0, m0)) continue;
+        if (loopcheck2_like_matlab(D_temp, AD, n0, m0)) continue;
 
         array<int, 4> r = { 1, 1, 1, 1 };
         if (curdir >= 1 && curdir <= 4) r[static_cast<size_t>(curdir - 1)] -= 1;
@@ -409,19 +412,11 @@ static Matrix gibbs4_cpp_matlab_like_seeded(
     uint64_t seed
 ) {
     Matrix D = D1;
-    Matrix I(n, m, 1);
     Xoshiro256ss gen(seed);
 
-    auto sumT = [](const Matrix& T) {
-        long long s = 0;
-        for (int v : T.data) s += v;
-        return static_cast<double>(s);
-        };
+    int maxIter = 10 * n * m;
 
-    const long long maxIter =
-        static_cast<long long>(ITERATION_COEFFICIENT) * n * m;
-
-    for (long long iter = 0; iter < maxIter; ++iter) {
+    for (int iter = 0; iter < maxIter; ++iter) {
         Matrix D_old = D;
         Matrix D_temp = D;
 
@@ -440,11 +435,8 @@ static Matrix gibbs4_cpp_matlab_like_seeded(
             continue;
         }
 
-        QResult resOld = calculateQ2(D_old, I, n0, m0);
-        QResult resNew = calculateQ2(D, I, n0, m0);
-
-        double H1 = sumT(resOld.T);
-        double H2 = sumT(resNew.T);
+        double H1 = computeHOnly(D_old, n0, m0);
+        double H2 = computeHOnly(D, n0, m0);
 
         double expo = exp(-beta * (H2 - H1));
         double minpart = (expo < 1.0) ? expo : 1.0;
@@ -585,7 +577,7 @@ static void writeWidthFunctionsCsv(
     }
 }
 
-// NSE (Nash–Sutcliffe Efficiency)
+// NSE (Nash-Sutcliffe Efficiency)
 static double computeNSE(const vector<double>& obs, const vector<double>& sim) {
     const size_t L = max(obs.size(), sim.size());
     if (L == 0) return numeric_limits<double>::quiet_NaN();
@@ -813,12 +805,6 @@ int main(int argc, char* argv[])
                     cerr << "File format error: insufficient data for D matrix\n";
                     return 1;
                 }
-                if (val < 0 || val > 4) {
-                    cerr << "Invalid direction code " << val
-                        << " at row " << (i + 1) << ", column " << (j + 1)
-                        << ". Allowed values are 0, 1, 2, 3, and 4.\n";
-                    return 1;
-                }
                 D1(i, j) = val;
             }
         }
@@ -831,12 +817,6 @@ int main(int argc, char* argv[])
 
         if (AD(n0, m0) == 0) {
             cerr << "Error: the outlet location is outside AD (valid-cell mask). (D1 is 0)\n";
-            return 1;
-        }
-
-        if (has_unreachable_active_cell(D1, AD, n0, m0)) {
-            cerr << "Invalid drainage network: at least one active cell does not "
-                << "reach the specified outlet.\n";
             return 1;
         }
 
