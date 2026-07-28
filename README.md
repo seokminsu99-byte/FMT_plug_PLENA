@@ -25,7 +25,6 @@ hydraulic analysis is required for design or rehabilitation decisions.
 | --- | --- |
 | [`src/main_EN_ver.cpp`](src/main_EN_ver.cpp) | Canonical source and public build target |
 | [`PROVENANCE.md`](PROVENANCE.md) | Software lineage, baseline hash, third-party sources, and AI-use disclosure |
-| [`CHANGELOG.md`](CHANGELOG.md) | Release history and scope of the public implementation revisions |
 | [`example.txt`](example.txt) | Synthetic 51 x 51 input |
 | [`example_explain.txt`](example_explain.txt) | Input contract and execution guide |
 | [`supplementary/ESM_1.pdf`](supplementary/ESM_1.pdf) | SERRA Online Resource 1 |
