@@ -1,0 +1,9 @@
+* text=auto eol=lf
+*.cpp text eol=lf
+*.cff text eol=lf
+*.md text eol=lf
+*.txt text eol=lf
+*.yml text eol=lf
+*.pdf binary
+*.xlsx binary
+*.docx binary

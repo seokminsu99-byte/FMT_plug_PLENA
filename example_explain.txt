@@ -1,0 +1,62 @@
+PLENA example input
+===================
+
+The companion file example.txt is a synthetic 51 x 51 drainage-direction grid.
+
+Input structure
+---------------
+
+Line 1
+    51 51
+    Number of rows and columns: n = 51, m = 51.
+
+Line 2
+    51 26
+    One-based outlet position: row 51, column 26.
+
+Remaining 51 lines
+    A 51 x 51 drainage-direction matrix.
+
+Direction codes
+---------------
+
+0 = inactive cell / no pipe
+1 = east
+2 = south
+3 = west
+4 = north
+
+Input contract
+--------------
+
+- The matrix must contain exactly n x m direction values.
+- Every value must be an integer from 0 through 4.
+- The outlet cell must be active.
+- Every active cell must eventually reach the specified outlet.
+
+FMT boundary
+------------
+
+In the study workflow, FMT prepares and validates these conditions before the
+file is supplied to PLENA. The public source also checks the grid dimensions,
+matrix completeness, direction-code range, outlet bounds, active outlet, and
+initial full-network outlet reachability. PLENA separately checks outlet
+reachability for every proposed stochastic network state.
+
+Build and run
+-------------
+
+Linux or macOS:
+    g++ -O2 -std=c++17 -pthread src/plena.cpp -o PLENA
+    ./PLENA example.txt
+
+Windows with MinGW:
+    g++ -O2 -std=c++17 -pthread src/plena.cpp -o PLENA.exe
+    PLENA.exe example.txt
+
+The program then prompts for the beta exponent, the update coefficient alpha,
+optional width-function analysis, candidate beta range, number of stochastic
+realizations, and thread cap. Entering alpha = 0 selects the study setting of
+10. A thread cap of 0 requests automatic selection from the available hardware
+concurrency. The batch interface initially offers k = -4 through 3 and 100
+stochastic realizations per candidate; both values can be changed interactively.
