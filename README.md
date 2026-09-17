@@ -10,7 +10,7 @@ the Nash-Sutcliffe efficiency (NSE).
 
 This repository accompanies the manuscript *Sinuosity–Inundation Trade-Offs in
 Urban Drainage Networks: A Scale-Proportional Gibbs’ Model Analysis of Seoul*,
-prepared for *Hydrological Processes*.
+prepared for *Journal of Flood Risk Management*.
 
 ## Repository contents
 
