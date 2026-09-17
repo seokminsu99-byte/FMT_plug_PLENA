@@ -1,5 +1,5 @@
 cff-version: 1.2.0
-message: "If you use PLENA, please cite the software and the accompanying article."
+message: "If you use PLENA, please cite the software and the accompanying manuscript prepared for Journal of Flood Risk Management."
 type: software
 title: "PLENA: Program for Large-scale Evaluation of Network Analysis"
 url: "https://github.com/seokminsu99-byte/FMT_plug_PLENA"

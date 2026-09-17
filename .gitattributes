@@ -1,3 +1,4 @@
+# Repository text and binary attributes
 * text=auto eol=lf
 *.cpp text eol=lf
 *.cff text eol=lf

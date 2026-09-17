@@ -2,6 +2,7 @@ PLENA example input
 ===================
 
 The companion file example.txt is a synthetic 51 x 51 drainage-direction grid.
+This example is distributed with the repository accompanying the *Journal of Flood Risk Management* manuscript.
 
 Input structure
 ---------------

@@ -1,3 +1,4 @@
+# Repository hygiene and generated-file exclusions
 # Local build products
 /PLENA
 /PLENA.exe

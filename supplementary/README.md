@@ -11,3 +11,6 @@
 Municipal drainage-network and catchment GIS files are not redistributed
 because their access and reuse are controlled by the Seoul Metropolitan
 Government.
+
+These supporting files are maintained with the repository for the accompanying
+*Journal of Flood Risk Management* manuscript.

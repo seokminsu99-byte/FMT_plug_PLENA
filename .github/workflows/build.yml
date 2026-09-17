@@ -1,3 +1,4 @@
+# CI workflow for the PLENA repository accompanying the Journal of Flood Risk Management manuscript.
 name: Build and smoke test
 
 on:

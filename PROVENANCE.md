@@ -1,5 +1,11 @@
 # Software provenance
 
+## Manuscript context
+
+This repository accompanies the manuscript *Sinuosity–Inundation Trade-Offs in
+Urban Drainage Networks: A Scale-Proportional Gibbs’ Model Analysis of Seoul*,
+prepared for *Journal of Flood Risk Management*.
+
 ## Public implementation
 
 The canonical source is [`src/plena.cpp`](src/plena.cpp).
